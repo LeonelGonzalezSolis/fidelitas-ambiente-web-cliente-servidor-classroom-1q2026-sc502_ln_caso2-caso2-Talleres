@@ -26,24 +26,23 @@ class AdminController
         require __DIR__ . '/../views/admin/solicitudes.php';
     }
     
-    // Aprobar solicitud
+     // Aprobar solicitud
     public function aprobar()
-    {
-        if (!isset($_SESSION['id']) || $_SESSION['rol'] !== 'admin') {
-            echo json_encode(['success' => false, 'error' => 'No autorizado']);
-            return;
-        }
-        
-        $solicitudId = $_POST['id_solicitud'] ?? 0;
-        
-        try {
-            
-            echo json_encode(['success' => true]);
-            
-        } catch (Exception $e) {
-            echo json_encode(['success' => false, 'error' => $e->getMessage()]);
-        }
+{
+    if (!isset($_SESSION['id']) || $_SESSION['rol'] !== 'admin') {
+        echo json_encode(['success' => false, 'error' => 'No autorizado']);
+        return;
     }
+    
+    $solicitudId = $_POST['id_solicitud'] ?? 0;
+    
+    if ($this->solicitudModel->aprobar($solicitudId)) {
+        echo json_encode(['success' => true, 'message' => 'Solicitud aprobada']);
+    } else {
+        echo json_encode(['success' => false, 'error' => 'Error al aprobar']);
+    }
+}
+
     public function rechazar()
     {
         if (!isset($_SESSION['id']) || $_SESSION['rol'] !== 'admin') {
@@ -59,4 +58,16 @@ class AdminController
             echo json_encode(['success' => false, 'error' => 'Error al rechazar']);
         }
     }
+
+    
+    public function getSolicitudesJson() {
+    if (!isset($_SESSION['id']) || $_SESSION['rol'] !== 'admin') {
+        header('Content-Type: application/json');
+        echo json_encode([]);
+        return;
+    }
+    $solicitudes = $this->solicitudModel->pendientes();
+    header('Content-Type: application/json');
+    echo json_encode($solicitudes);
+}
 }
