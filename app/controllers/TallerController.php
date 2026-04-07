@@ -38,15 +38,20 @@ class TallerController
         echo json_encode($talleres);
     }
     
-    public function solicitar()
-    {
-        if (!isset($_SESSION['id'])) {
-            echo json_encode(['success' => false, 'error' => 'Debes iniciar sesión']);
-            return;
-        }
-        
-        $tallerId = $_POST['taller_id'] ?? 0;
-        $usuarioId = $_SESSION['id'];
-
+    public function solicitar(){
+    if (!isset($_SESSION['id'])) {
+        echo json_encode(['success' => false, 'message' => 'Debes iniciar sesión']);
+        return;
     }
+
+    $tallerId = $_POST['taller_id'] ?? 0;
+    $usuarioId = $_SESSION['id'];
+
+    // Solicitud
+    $resultado = $this->solicitudModel->crear($usuarioId, $tallerId);
+
+    header('Content-Type: application/json');
+    echo json_encode($resultado);
+}
+
 }
